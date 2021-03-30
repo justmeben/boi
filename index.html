@@ -41,7 +41,7 @@
         text-decoration: none;
         color: #0be9ae;
         font-weight: 300;
-        font-size: 48px;
+        font-size: 36px;
         transition: .3s ease;
     }
     
@@ -63,6 +63,45 @@
         z-index: 5;
         opacity: .5;
     }
+    
+    .inputext {
+        background: #2f3136;
+        color: white;
+        font-size: 18px;
+        border: 1px solid #0be9ae;
+        border-radius: 5px;
+        padding: 5px;
+    }
+    
+    #demo {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-content: center;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+    }
+    
+    .review {
+        width: 100%;
+        max-width: 500px;
+        background: #111111ee;
+        padding: 30px;
+        border-radius: 5px;
+        margin: 10px;
+        position: relative;
+        border: 1px solid #777;
+        padding-bottom: 50px;
+    }
+    
+    .review-title {
+        position: relative;
+        color: white;
+        bottom: 25px;
+        margin-left: 10px;
+    }
 </style>
 
 <body>
@@ -71,12 +110,18 @@
         <![endif]-->
     <div style='position: relative; z-index: 10;'>
         <h1>its ya boi bentzy</h1>
-        <br>
-        <span>Links:</span><br>
-        <a href='https://picbot.gg' target='_blank'>picbot.gg</a> <br>
+        <span>Bot ID & Page number:</span><br>
+        <!-- <a href='https://picbot.gg' target='_blank'>picbot.gg</a> <br>
         <a href='https://monkeytype.com' target='_blank'>monkeytype.com</a> <br>
         <a href='https://top.gg' target='_blank'>top.gg</a> <br>
-        <a href='https://discord.boats' target='_blank'>discord.boats</a>
+        <a href='https://discord.boats' target='_blank'>discord.boats</a> <br> -->
+        <input class='inputext' type='text' id='botid' placeholder="Bot ID" required>
+        <input class='inputext' type='number' id='page' placeholder="Page" value=1 style='max-width: 60px; margin-bottom: 10px;' required>
+        <br>
+        <a onclick='loadDoc()' href='#'>Load Reviews</a>
+    </div>
+
+    <div id='demo'>
 
     </div>
 
@@ -86,6 +131,44 @@
     <!-- scripts -->
     <script src="particles.js"></script>
     <script src="js/app.js"></script>
+    <script>
+        // document.addEventListener("DOMContentLoaded", function() {
+        //     loadDoc()
+        // });
+        let resp
+
+        function loadDoc() {
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function() {
+                if (this.readyState == 4 && this.status == 200) {
+                    resp = JSON.parse(this.response)
+
+                    let reviews_str = ""
+                    resp.forEach((review) => {
+                        let review_str = `<div class='review'> <img src='${review.poster.avatar}' style='width: 70px; height: 70px; border-radius: 50px'> 
+                            <strong class='review-title'>${review.poster.username}</strong>
+                            <br>
+                            <p style="font-size: 16px;">${review.content}</p>
+
+                            <div style="position: absolute; bottom: 10px; left: 10px; font-size: 20px; font-weight: bold; color: #0be9ae">Votes: ${review.votes}</div>
+                            <div style="position: absolute; bottom: 10px; right: 10px; font-size: 20px; font-weight: bold; color: #0be9ae">Stars: ${review.score / 20}</div>
+                            </div>`
+
+                        reviews_str = reviews_str + review_str
+                    })
+                    document.getElementById('demo').innerHTML = reviews_str
+                }
+            };
+
+            let bot_id = document.getElementById('botid').value
+            let page = document.getElementById('page').value
+
+            xhttp.open("GET", "https://top.gg/api/client/entities/" + bot_id + "/reviews?page=" + page, true);
+            xhttp.send();
+        }
+    </script>
+
 </body>
 
 </html>
